@@ -17,10 +17,14 @@ const asda = new Seller({
     "Banannas":{
         quantity:1000,
         price:10.0
+    },
+    "Pineapples":{
+        quantity:50,
+        price:3.50
     }
 }, "Asda", 5);
 
-const budgens = new Seller({
+const costco = new Seller({
     "Apples":{
         quantity:25,
         price:4.25
@@ -36,10 +40,14 @@ const budgens = new Seller({
     "Banannas":{
         quantity:100,
         price:4.0
+    },
+    "Pineapples":{
+        quantity:100,
+        price:4.25
     }
-}, "Budgens", 1);
+}, "Costco", 1);
 
-const costco = new Seller({
+const tesco = new Seller({
     "Apples":{
         quantity:250,
         price:6.25
@@ -63,7 +71,11 @@ const costco = new Seller({
     "Banannas":{
         quantity:100,
         price:8.0
+    },
+    "Pineapples":{
+        quantity:200,
+        price:10.0
     }
-}, "Costco", 10);
+}, "Tesco", 10);
 
-module.exports = {asda,budgens, costco}
+module.exports = {asda, costco, tesco}

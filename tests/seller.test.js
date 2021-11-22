@@ -3,7 +3,7 @@ const {Seller} = require("../Seller")
 
 
 describe("Seller", function(){
-    var sellerInventory;
+    let sellerInventory;
     beforeEach(() => {
         sellerInventory = {
             "Apples":{
@@ -71,7 +71,7 @@ describe("Seller", function(){
     it("should be able to set delivery schedule", () => {
         const deliveryCadence = 3;
         let sut = new Seller(sellerInventory,"Asda",deliveryCadence);
-        allOranges = sut.inventory["Oranges"].quantity;
+        let allOranges = sut.inventory["Oranges"].quantity;
         sut.sell("Oranges", allOranges);
         expect(sut.inventory["Oranges"].quantity).toEqual(0);
         sut.tick("Oranges");

@@ -1,7 +1,6 @@
 const stream = require('stream');
 const rand = require('random-seed');
 
-
 function getExpectedChange(generator) {
     return generator(100) / 100;
 }
@@ -25,6 +24,7 @@ class Seller {
             value.stingyness = 0;
         }
     }
+
     quote(product) {
         const inventory = this.inventory[product];
         return inventory.price;
@@ -51,7 +51,6 @@ class Seller {
         return {boughtQuantity, cost};
     }
 
-
     tick() {
         for (let [product, value] of Object.entries(this.inventory)) {
             let inventory = value;
@@ -65,6 +64,5 @@ class Seller {
         }
     }
 }
-
 
 module.exports = {Seller}
