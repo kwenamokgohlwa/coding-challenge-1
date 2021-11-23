@@ -32,29 +32,46 @@ class Seller {
 
     calculatePriceChange(product){
         const inventory = this.inventory[product];
-        const v = 0.1
+        const v = 0.1;
         const ec = getExpectedChange(this.random_generator);
-        const alpha = inventory.startingQuantity
-        const beta = inventory.quantity
-        const inv_based_change = Math.log10(beta / alpha) * (-v);
-        const sentimentChange = inv_based_change + ((ec - 0.5)*v)
-        return sentimentChange;
+
+        //Log functions are only defined in x > 0, furthermore I had to transform the formula using log rules to subtract instead of divide because it introduced unsecure complexity in input management
+        // I also introduced relevant and useful default values for edge cases that will still promote the dynamic pricing
+        const alpha = inventory.startingQuantity && inventory.startingQuantity > 0 && isNaN(inventory.startingQuantity) ? inventory.startingQuantity : 1;
+        const beta = inventory.quantity && inventory.quantity > 0 && isNaN(inventory.quantity) ? inventory.quantity : 1;
+
+        const alphaRate = Math.log10(alpha);
+        const betaRate = Math.log10(beta);
+
+        const delta = betaRate - alphaRate;
+
+        //This is an extra precautionary measure to leave the price unchanged if alphaRate or betaRate somehow get Infinite or falsey values
+        if (delta && delta === (Infinity || -Infinity)) {
+            return 0;
+        }
+
+        const inv_based_change = (-v) * (delta);
+        const exp_change = ((+v) * (ec - 0.5));
+
+        return inv_based_change + exp_change;
     }
     
     sell(product, buyQuantity) {
         const inventory = this.inventory[product];
         const boughtQuantity = buyQuantity > inventory.quantity ? inventory.quantity : buyQuantity;
         const cost = boughtQuantity * this.quote(product);
+
         inventory.quantity -= boughtQuantity;
         inventory.stingyness = 1 - inventory.quantity / inventory.startingQuantity;
         this.tick();
+
         return {boughtQuantity, cost};
     }
 
     tick() {
         for (let [product, value] of Object.entries(this.inventory)) {
             let inventory = value;
-            const isReadyForDelivery = (inventory.priceHistory.length % this.deliveryWait) == 0;
+            const isReadyForDelivery = (inventory.priceHistory.length % this.deliveryWait) === 0; // use three equal operators to avoid type coercion
             if (isReadyForDelivery) {
                 inventory = getDeliveries(inventory, this.random_generator);
             }
@@ -62,6 +79,12 @@ class Seller {
             inventory.price = inventory.price + (inventory.price*chg)
             inventory.priceHistory.push(inventory.price);
         }
+    }
+}
+
+class FairSeller extends Seller {
+    constructor() {
+        super();
     }
 }
 

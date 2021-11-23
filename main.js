@@ -4,12 +4,12 @@ const { Buyer } = require("./Buyer");
 
 
 function main() {
-    const market = new Market([asda,costco, tesco]);
+    const market = new Market([asda, costco, tesco]);
     let buyer = new Buyer(market);
     let product = "Pineapples";
     let quantity = 250;
     buyerFunctions(product, quantity, buyer);
-    // observeMarket(market);
+    observeMarket(market);
 }
 
 function buyerFunctions(product, quantity, buyer) {
@@ -21,7 +21,7 @@ function buyerFunctions(product, quantity, buyer) {
 
 function observeMarket(market) {
     market.observable.subscribe( (mkt) => {
-        console.log(`The current price of apples are ${market.sellers[0].inventory["Apples"].price}`)});
+        console.log(`The current price of pineapples are ${market.sellers[0].inventory["Pineapples"].price}`)});
 }
 
 main();

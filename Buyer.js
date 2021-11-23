@@ -11,7 +11,7 @@ class Buyer {
         const { sellers } = this.market;
 
         return sellers.reduce((bestPrice, seller) => {
-            return seller.inventory[product] ? Math.min(bestPrice, seller.inventory[product].price) : bestPrice;
+            return Math.min(bestPrice, seller.quote(product));
         }, Number.MAX_SAFE_INTEGER);
     }
 
@@ -22,14 +22,18 @@ class Buyer {
         const { sellers } = this.market;
 
         return sellers.sort((a, b) => optimization(a, b, product)).reduce((cost, seller) => {
-            const sellerPrice = seller.inventory[product] ? seller.inventory[product].price : 0;
-            const sellerQuantity = seller.inventory[product] ? Math.min(quantity, seller.inventory[product].quantity) : 0;
+            const receipt = seller.sell(product, quantity);
 
-            quantity = quantity - sellerQuantity;
+            quantity -= receipt.boughtQuantity || 0;
 
-            const sellerCost = sellerPrice * sellerQuantity;
+            console.log("------------------------------")
+            console.log("ID: " + seller.id)
+            console.log("Sell Quant: " + receipt.boughtQuantity)
+            console.log("Sell Cost: " + receipt.cost)
+            console.log("Quantity: " + quantity)
+            console.log("Cost: " + cost)
 
-            return cost + sellerCost;
+            return cost + (receipt.cost || 0);
         }, 0);
     }
 
@@ -37,7 +41,7 @@ class Buyer {
      * Helper function: optimize order by best price
      */
     _BestPrices(a, b, product) {
-        return a.inventory[product].price - b.inventory[product].price;
+        return a.quote(product) - b.quote(product);
     }
 
     /**
@@ -45,7 +49,7 @@ class Buyer {
      */
     _LargestSellers(a, b, product){
         if (b.inventory[product] && b.inventory[product].quantity === a.inventory[product].quantity) {
-            return a.inventory[product].quantity - b.inventory[product].quantity;
+            return a.quote(product) - b.quote(product);
         }
         return b.inventory[product].quantity - a.inventory[product].quantity;
     }
