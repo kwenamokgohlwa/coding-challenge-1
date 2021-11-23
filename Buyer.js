@@ -1,3 +1,5 @@
+const { Seller, FairSeller } = require("./Seller")
+
 class Buyer {
     constructor(market) {
         this.market = market;
@@ -18,40 +20,15 @@ class Buyer {
     /**
      * Helper function: for fillWith_X methods
      */
-    _fillWith(optimization, product, quantity) {
+     #fillWith(optimize, product, quantity) {
         const { sellers } = this.market;
 
-        return sellers.sort((a, b) => optimization(a, b, product)).reduce((cost, seller) => {
+        return sellers.sort((a, b) => optimize(a, b)).reduce((cost, seller) => {
             const receipt = seller.sell(product, quantity);
-
             quantity -= receipt.boughtQuantity || 0;
-
-            console.log("------------------------------")
-            console.log("ID: " + seller.id)
-            console.log("Sell Quant: " + receipt.boughtQuantity)
-            console.log("Sell Cost: " + receipt.cost)
-            console.log("Quantity: " + quantity)
-            console.log("Cost: " + cost)
 
             return cost + (receipt.cost || 0);
         }, 0);
-    }
-
-    /**
-     * Helper function: optimize order by best price
-     */
-    _BestPrices(a, b, product) {
-        return a.quote(product) - b.quote(product);
-    }
-
-    /**
-     * Helper function: optimize order by sellers available quantity
-     */
-    _LargestSellers(a, b, product){
-        if (b.inventory[product] && b.inventory[product].quantity === a.inventory[product].quantity) {
-            return a.quote(product) - b.quote(product);
-        }
-        return b.inventory[product].quantity - a.inventory[product].quantity;
     }
 
     /**
@@ -60,7 +37,9 @@ class Buyer {
      * then the next cheapest seller should be used.
      */
     fillWithBestPrices(product, quantity) {
-        return this._fillWith(this._BestPrices, product, quantity);
+        const model = (a, b) => { return a.quote(product) - b.quote(product) };
+
+        return this.#fillWith(model, product, quantity);
     }
 
     /**
@@ -71,7 +50,9 @@ class Buyer {
      * you should use the cheaper of the two.
      */
     fillWithLargestSellers(product, quantity) {
-        return this._fillWith(this._LargestSellers, product, quantity);
+        const model = (a, b) => { return b.getQuantity(product) === a.getQuantity(product) ? a.quote(product) - b.quote(product) : b.getQuantity(product) - a.getQuantity(product) };
+
+        return this.#fillWith(model, product, quantity);
     }
 
 }

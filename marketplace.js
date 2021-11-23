@@ -1,5 +1,4 @@
-const { Market } = require("./Market");
-const { Seller } = require("./Seller")
+const { Seller, FairSeller } = require("./Seller")
 
 const asda = new Seller({
     "Apples":{
@@ -78,4 +77,28 @@ const tesco = new Seller({
     }
 }, "Tesco", 10);
 
-module.exports = {asda, costco, tesco}
+const milltechfx = new FairSeller({
+    "Apples":{
+        quantity:100,
+        price:7.0
+    },
+    "Oranges":{
+        quantity:150,
+        price:1.0
+    },
+    "Pears":{
+        quantity:10,
+        price:20.9
+    },
+    "Banannas":{
+        quantity:1000,
+        price:10.7
+    },
+    "Pineapples":{
+        quantity:100,
+        price:25
+    }
+}, "MillTechFX", 5);
+
+
+module.exports = {asda, costco, tesco, milltechfx}

@@ -11,10 +11,10 @@ class Market {
     }
 
     tick(){
-
         this.sellers.forEach(seller => {
-            seller.tick()
+            seller.tick();
         });
     }
 }
+
 exports.Market = Market;

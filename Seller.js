@@ -1,4 +1,3 @@
-const stream = require('stream');
 const rand = require('random-seed');
 
 function getExpectedChange(generator) {
@@ -18,11 +17,16 @@ class Seller {
         this.deliveryWait = deliveryWait;
         this.random_generator = rand(id);
         this.id = id;
-        for (let [key, value] of Object.entries(inventory)) {
+        for (let [product, value] of Object.entries(inventory)) {
             value.startingQuantity = value.quantity;
             value.priceHistory = [value.price];
             value.stingyness = 0;
         }
+    }
+
+    getQuantity(product) {
+        const inventory = this.inventory[product];
+        return inventory.quantity;
     }
 
     quote(product) {
@@ -83,9 +87,40 @@ class Seller {
 }
 
 class FairSeller extends Seller {
-    constructor() {
-        super();
+    constructor(inventory, id = "Fairway", deliveryWait = 3) {
+        super(inventory, id, deliveryWait);
+        for (let [product, value] of Object.entries(inventory)) {
+            value.startingQuantity = value.quantity;
+            value.priceHistory = 1;
+            value.stingyness = 0;
+        }
+    }
+
+    //Just to be thorough I made sure there would be no inherited dynamic pricing functionality
+    calculatePriceChange() { return 0 };
+
+    sell(product, buyQuantity) {
+        const inventory = this.inventory[product];
+        const boughtQuantity = buyQuantity > inventory.quantity ? inventory.quantity : buyQuantity;
+        const cost = boughtQuantity * super.quote(product);
+
+        inventory.quantity -= boughtQuantity;
+
+        this.tick();
+
+        return {boughtQuantity, cost};
+    }
+
+    tick() {
+        for (let [product, value] of Object.entries(this.inventory)) {
+            let inventory = value;
+            const isReadyForDelivery = (inventory.priceHistory % this.deliveryWait) === 0; // use three equal operators to avoid type coercion
+            if (isReadyForDelivery) {
+                inventory = getDeliveries(inventory, this.random_generator);
+            }
+            inventory.priceHistory += 1;
+        }
     }
 }
 
-module.exports = {Seller}
+module.exports = {Seller, FairSeller}

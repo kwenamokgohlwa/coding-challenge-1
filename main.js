@@ -1,10 +1,10 @@
-const {asda, costco, tesco} = require("./marketplace");
+const {asda, costco, tesco, milltechfx} = require("./marketplace");
 const { Market } = require("./Market");
 const { Buyer } = require("./Buyer");
 
 
 function main() {
-    const market = new Market([asda, costco, tesco]);
+    const market = new Market([asda, costco, tesco, milltechfx]);
     let buyer = new Buyer(market);
     let product = "Pineapples";
     let quantity = 250;
@@ -21,7 +21,9 @@ function buyerFunctions(product, quantity, buyer) {
 
 function observeMarket(market) {
     market.observable.subscribe( (mkt) => {
-        console.log(`The current price of pineapples are ${market.sellers[0].inventory["Pineapples"].price}`)});
+        console.log(`${market.sellers[1].id}: The current price of pineapples are ${market.sellers[1].inventory["Pineapples"].price}`);
+        console.log(`${market.sellers[3].id}: The current price of pineapples are ${market.sellers[3].inventory["Pineapples"].price}`);
+    });
 }
 
 main();
